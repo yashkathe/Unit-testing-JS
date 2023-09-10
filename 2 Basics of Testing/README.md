@@ -20,7 +20,7 @@ To make the functions from vitest global so you dont have to import it. We can a
 }
 ```
 
-# Writing a test file
+## Writing a test file
 
 ## it / test
 
@@ -65,6 +65,17 @@ it('should summarise all number values in an array', () => {
 
 So we pass and argument to our function and expect out result **toBe** 6
 
+## .not
+
+.not is added to expect a opposite result
+
+```js
+    expect(resultFn).not.toThrow();
+    expect(result).not.toBe(expectedResult);
+```
+
+It is chained with expect  
+
 ## Running our tests
 
 We can use any of the following command to run our test files
@@ -103,3 +114,167 @@ npm run test:watch
 ```
 
 Now this will keep watching our code continuously  
+
+## Following the AAA pattern
+
+1. **Arrange** - Define the testing environment and values
+2. **Act** - Run the actual code / function that should be tested
+3. **Assert** - Evaluate the produced the value / get result and compare it to the expected value
+
+```js
+it('should summarise all number values in an array', () => {
+
+    // Arrange
+    const numbers = [ 1, 2, 3 ];
+
+    // Act
+    const result = add(numbers);
+
+    // Assert
+    const expectedResult = numbers.reduce((prev, curr) => prev + curr, 0);
+
+    expect(result).toBe(expectedResult);
+});
+```
+
+Keep your tests simple and concise  
+
+### Some more tests
+
+```js
+it('should yield NaN if at least one invalid number is provided', () => {
+
+    const inputs = [ 'invalid', 1 ];
+
+    const result = add(inputs);
+
+    expect(result).toBeNaN();
+
+});
+
+```
+
+```js
+it('should yield a correct sum if an array of numeric string values is provided', () => {
+
+    const inputs = [ '1', '2' ];
+
+    const result = add(inputs);
+
+    const expectedResult = inputs.reduce((acc, curr) => +acc + +curr, 0);
+
+    expect(result).toBe(expectedResult);
+});
+```
+
+## Testing for Errors - ToThrow()
+
+Checking whether a certain unit throws an error
+
+```js
+it('should throw and error if no value is passed into a function', () => {
+
+    const resultFn = () => {
+        add();
+    };
+
+    expect(resultFn).toThrow();
+
+});
+```
+
+- Here we store our function in a other function    
+- So the function we want to test will only run when the function which is storing it, is called  
+- So we will let vitest execute it by calling external function and expect it to throw  
+
+## Testing for thrown errors and error messages
+
+
+```js
+it('should throw an error if provided with multiple arguments instead of an array', () => {
+
+    const num1 = 1;
+    const num2 = 2;
+
+    const resultFn = () => {
+        add(num1, num2);
+    };
+
+    expect(resultFn).toThrow(/is not iterable/)
+
+});
+
+```
+
+Here we are checking with **regular expression** that the error message contains "is not iterable"  
+
+## Test with multiple assertions (expectations)
+
+Typically, it is a good idea if one test tests one thing.  
+
+But there are scenarios where multiple expectations do make sense.  
+
+```js
+it('should yield Nan for non-transformable values', () => {
+
+    const input = 'invalid';
+    const input2 = {};
+
+    const result = transformToNumber(input);
+    const result2 = transformToNumber(input2);
+
+    expect(result).toBeNaN();
+    expect(result2).toBeNaN();
+
+});
+```
+
+## Test suites - describe
+
+When we have multiple tests in one file, it can be hard to maintain them but that's not the biggest problem.  
+
+Instead, it can be hard to reason about the output when you run your tests. 
+
+It is common to organize your tests into so-called **test suites**.
+
+To create test suites vitest provides a function called **describe**.
+
+```js
+import { describe } from 'vitest';
+```
+
+**describe** takes two arguments  
+1. Description of test suit (string)
+2. Anonymus function which stores all the tests related to the test suites
+
+```js
+
+describe('validateNumber()', () => {
+
+    it('should throw an error if NaN is provided', () => {
+        const input = NaN;
+        const validationFn = () => validateNumber(input);
+        expect(validationFn).toThrow();
+    });
+
+    it('should throw an error with a message that contains a reason (invalid number)', () => {
+        const input = NaN;
+        const validationFn = () => validateNumber(input);
+        expect(validationFn).toThrow(/Invalid number/);
+    });
+
+    it('should throw an error if a non-numeric value is provided', () => {
+        const input = '1';
+        const validationFn = () => validateNumber(input);
+        expect(validationFn).toThrow();
+    });
+
+    it('should not throw an error, if a number is provided', () => {
+        const input = 1;
+        const validationFn = () => validateNumber(input);
+        expect(validationFn).not.toThrow();
+    });
+
+});
+
+```
