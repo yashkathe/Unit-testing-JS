@@ -1,6 +1,9 @@
 # Javascript Unit Testing with Vitest
 
+Vitest is the unit testing framework built on top of Vite and is an excellent unit test framework with many modern features such as: Component testing for Vue, React, Svelte, Lit and more
+
 ## Index
 
-- [Installation](./1%20Installation/)
-- [Basics of Testing](./2%20Basics%20of%20Testing/)
+- [Installation](./Installation/)
+- [Basics of Testing](./Basics-of-testing/)
+- [Writing Good Tests](./Writing-good-tests/)
